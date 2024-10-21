@@ -1,0 +1,40 @@
+{
+  "name": "api-gateway",
+  "version": "1.0.0",
+  "description": "A highly scalable and optimized API Gateway for handling multiple services with enhanced security and performance.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "axios": "^1.3.4", // HTTP client for service integration
+    "express": "^4.18.2", // Web framework for building routes
+    "dotenv": "^16.0.3", // Environment variables manager
+    "helmet": "^6.0.0", // Secure HTTP headers
+    "compression": "^1.7.4", // Response compression for performance
+    "express-rate-limit": "^7.0.0", // Rate limiting for brute force protection
+    "winston": "^3.8.1", // Logging utility
+    "express-validator": "^6.15.0", // Request validation for input validation middleware
+    "lru-cache": "^6.0.0", // Caching for performance
+    "jsonwebtoken": "^9.0.0", // JWT handling for authentication
+    "morgan": "^1.10.0", // HTTP request logger for monitoring
+    "node-cache": "^6.0.2" // Caching for internal data to reduce service calls
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20" // Auto-restart for development purposes
+  },
+  "engines": {
+    "node": ">=14.0.0" // Ensuring compatibility with recent Node.js versions
+  },
+  "keywords": [
+    "API Gateway",
+    "scalable",
+    "secure",
+    "performance",
+    "nodejs",
+    "express"
+  ],
+  "author": "rvoc2324",
+  "license": "Proprietory"
+}
