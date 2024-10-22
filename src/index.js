@@ -7,11 +7,15 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
 const gatewayRoutes = require('./routes/gatewayRoutes');
+const healthRoutes = require('./routes/healthRoutes');
 const { errorHandler } = require('./utils/errorHandler');
 const { logger } = require('./utils/logger');
 const securityHeadersMiddleware = require('./middleware/SecurityHeadersMiddleware');
 
 const app = express();
+
+// Use health routes
+app.use(healthRoutes);
 
 // Global Middlewares
 app.use(cors()); // Enable CORS for cross-origin requests
@@ -31,7 +35,7 @@ app.use(securityHeadersMiddleware); // Security headers middleware
 app.use(limiter); // Apply rate limiting globally
 
 // Gateway Routes
-app.use('/api', gatewayRoutes); // Prefix all routes with `/api`
+app.use('/', gatewayRoutes); // Prefix all routes with `/api`
 
 // Error Handler Middleware (Should be at the end)
 app.use(errorHandler); // Handle any uncaught errors

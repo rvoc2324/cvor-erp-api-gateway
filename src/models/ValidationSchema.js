@@ -1,4 +1,4 @@
-// models/ValidationModel.js
+// models/ValidationSchema.js
 const Joi = require('joi');
 
 // Auth service validation schemas
@@ -68,24 +68,6 @@ const verificationSchema = Joi.object({
     documentType: Joi.string().valid('passport', 'id_card', 'driver_license').required()
 });
 
-// Encryption service validation schemas
-const encryptionSchema = Joi.object({
-    data: Joi.string().required().messages({
-        'any.required': 'Data is required for encryption.'
-    }),
-    encryptionKey: Joi.string().required().messages({
-        'any.required': 'Encryption key is required.'
-    })
-});
-
-const decryptionSchema = Joi.object({
-    encryptedData: Joi.string().required().messages({
-        'any.required': 'Encrypted data is required for decryption.'
-    }),
-    decryptionKey: Joi.string().required().messages({
-        'any.required': 'Decryption key is required.'
-    })
-});
 
 module.exports = {
     loginSchema,
@@ -96,8 +78,6 @@ module.exports = {
     crmCustomerSchema,
     detauDataSchema,
     verificationSchema,
-    encryptionSchema,
-    decryptionSchema
 };
 
 

@@ -1,5 +1,12 @@
 const express = require('express');
-const GatewayController = require('../controllers/GatewayController');
+
+const AuthController = require('../controllers/AuthController');  // Updated to use service-specific controllers
+const BlockchainController = require('../controllers/BlockchainController');
+const CRMController = require('../controllers/CRMController');
+const DetauController = require('../controllers/DetauController');
+const VerificationController = require('../controllers/VerificationController');
+const EncryptionController = require('../controllers/EncryptionController');
+
 const authMiddleware = require('../middleware/AuthMiddleware');
 const validate = require('../middleware/ValidationMiddleware');
 const bruteForceProtectionMiddleware = require('../middleware/BruteForceProtectionMiddleware');
@@ -14,44 +21,55 @@ const {
     crmCustomerSchema,
     detauDataSchema,
     verificationSchema,
-    encryptionSchema,
-    decryptionSchema
-} = require('../models/ValidationModel');
+} = require('../models/ValidationSchema');
 
 const router = express.Router();
 
 // Auth Service Routes
 router.post(
-    '/auth/login',
+    '/login',
     bruteForceProtectionMiddleware.loginRateLimit,   // Apply brute force protection for login attempts
     validate(loginSchema),
-    GatewayController.handleAuthRequest
+    AuthController.initiateLogin
 );
 
 router.post(
-    '/auth/register',
+    '/register/individual',
     validate(registerSchema),
-    GatewayController.handleAuthRequest
+    AuthController.registerIndividual
 );
 
 router.post(
-    '/auth/verify-otp',
+    '/register/enterprise',
+    validate(registerSchema),
+    AuthController.registerEnterprise
+);
+
+router.post(
+    '/verify-otp',
     bruteForceProtectionMiddleware.otpormfaprotectionMiddleware,  // Apply brute force protection for OTP/MFA attempts
     validate(otpSchema),
-    GatewayController.handleAuthRequest // Assuming the existence of this controller for OTP
-);
-
-router.get(
-    '/auth/profile/:id',
-    authMiddleware,
-    validate(profileSchema),
-    GatewayController.handleAuthRequest
+    AuthController.verifyOTP
 );
 
 router.post(
-    '/auth/logout',
-    authmiddleware,
-    GatewayController.handleAuthRequest // Assuming the existence of this controller for OTP
+    '/mfa',
+    bruteForceProtectionMiddleware.otpormfaprotectionMiddleware,  // Apply brute force protection for OTP/MFA attempts
+    validate(otpSchema),
+    AuthController.setupMFA
+);
+
+router.post(
+    '/profile/:id',
+    authMiddleware,
+    validate(profileSchema),
+    AuthController.getProfile  // Add the appropriate method in AuthController if it doesn't exist
+);
+
+router.post(
+    '/logout',
+    authMiddleware,
+    AuthController.logout
 );
 
 // Blockchain Service Routes
@@ -59,35 +77,35 @@ router.post(
     '/blockchain/record',
     authMiddleware,
     validate(blockchainRecordSchema),
-    GatewayController.handleBlockchainRequest
+    BlockchainController.createRecord
 );
 
 // CRM Service Routes
 router.get(
     '/crm/customer/:id',
     authMiddleware,
-    GatewayController.handleCRMRequest
+    CRMController.getCustomer
 );
 
 router.post(
     '/crm/customer',
     authMiddleware,
     validate(crmCustomerSchema),
-    GatewayController.handleCRMRequest
+    CRMController.createCustomer
 );
 
 // Detau Service Routes
 router.get(
     '/detau/data/:id',
     authMiddleware,
-    GatewayController.handleDetauRequest
+    DetauController.getData
 );
 
 router.post(
     '/detau/data',
     authMiddleware,
     validate(detauDataSchema),
-    GatewayController.handleDetauRequest
+    DetauController.saveData
 );
 
 // Verification Service Routes
@@ -95,7 +113,7 @@ router.post(
     '/verification/verify',
     authMiddleware,
     validate(verificationSchema),
-    GatewayController.handleVerificationRequest
+    VerificationController.verifyUserData
 );
 
 // Encryption Service Routes
@@ -103,17 +121,17 @@ router.post(
     '/encryption/encrypt',
     authMiddleware,
     validate(encryptionSchema),
-    GatewayController.handleEncryptionRequest
+    EncryptionController.encryptData
 );
 
 router.post(
     '/encryption/decrypt',
     authMiddleware,
     validate(decryptionSchema),
-    GatewayController.handleEncryptionRequest
+    EncryptionController.decryptData
 );
 
 // Health Check Route (General for the Gateway)
-router.get('/health', GatewayController.healthCheck);
+router.get('/health', (req, res) => res.status(200).json({ status: 'Gateway is healthy' }));
 
 module.exports = router;
